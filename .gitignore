@@ -2,5 +2,7 @@
 __pycache__
 
 # Data dir
-plots/
-video/
+/plots/*
+!/plots/.gitkeep
+/video/*
+!/video/.gitkeep
