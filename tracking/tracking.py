@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 import cv2
@@ -14,11 +13,11 @@ root_dir = Path.cwd()
 video_dir = root_dir / Path('video') # Default
 plots_dir = root_dir / Path('plots') # Default
 
-videofilename = 'SiO2-50nm_660nm5.5mW_785nm4.0mW_RL'
+videofilename = 'video_file_name'
 
 # Pixel size(in microns):
 # umperpixel = 0.17768691284147112 #40x
-umperpixel = 0.7170625782472173 #10x
+umperpixel = 0.7170625782472173 #10x # Default
 # umperpixel = 1.4450851963350324 #5x
 
 # Thresholds of brightness
