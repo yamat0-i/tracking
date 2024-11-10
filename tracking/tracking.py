@@ -7,11 +7,13 @@ import matplotlib.pyplot as plt
 import tracking.settings as settings
 
 
+# Load settings
 # Path
 root_dir = settings.root_dir
 video_dir = settings.video_dir
 plots_dir = settings.plots_dir
 videofilename = settings.videofilename
+vedeofilepath = video_dir / Path(videofilename + '.avi')
 
 # Pixel size(in microns):
 umperpixel = settings.umperpixel
@@ -20,15 +22,19 @@ umperpixel = settings.umperpixel
 pMin = settings.pMin
 pMax = settings.pMax
 
-# Plot region select (prs)
-prs = settings.prs
-if prs:
+# Plot range
+sprx = settings.select_plotrange_x
+spry = settings.select_plotrange_y
+if sprx:
+    xMin = settings.xMin
+    xMax = settings.xMax
+if spry:
     yMin = settings.yMin
     yMax = settings.yMax
 
 
 def main():
-    cap = cv2.VideoCapture(video_dir / Path(videofilename + '.avi'))
+    cap = cv2.VideoCapture(vedeofilepath)
     if not cap.isOpened():
         print("Error: Could not open video.")
         return
@@ -53,6 +59,10 @@ def main():
 
     plt.figure(1)
     plt.pcolor(t, y, dataM, cmap="bone")
+    if sprx:
+        plt.xlim(xMin, xMax)
+    if spry:
+        plt.ylim(yMin, yMax)
     plt.ylabel("Position along fiber (um)")
     plt.xlabel("Time (s)")
     plt.title(videofilename)
