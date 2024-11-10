@@ -7,7 +7,7 @@ root_dir = Path.cwd()
 video_dir = root_dir / Path('video') # Default
 plots_dir = root_dir / Path('plots') # Default
 
-videofilename = 'videofilename'
+videofilename = 'L-PEG_660nm_785nm_2024-11-07T15-49-52.456'
 
 # Pixel size(in microns):
 # umperpixel = 0.17768691284147112 #40x
