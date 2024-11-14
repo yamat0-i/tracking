@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import tracking.settings as settings
 
 
-# Load settings
 # Path
 root_dir = settings.root_dir
 video_dir = settings.video_dir
@@ -24,13 +23,9 @@ umperpixel = settings.umperpixel
 pMin = settings.pMin
 pMax = settings.pMax
 
-# Plot range
-sprx = settings.select_plotrange_x
-spry = settings.select_plotrange_y
-if sprx:
-    xMin = settings.xMin
-    xMax = settings.xMax
-if spry:
+# Plot region select (prs)
+prs = settings.prs
+if prs:
     yMin = settings.yMin
     yMax = settings.yMax
 
@@ -62,10 +57,6 @@ def main():
 
     plt.figure(1)
     plt.pcolor(t, y, dataM, cmap="bone")
-    if sprx:
-        plt.xlim(xMin, xMax)
-    if spry:
-        plt.ylim(yMin, yMax)
     plt.ylabel("Position along fiber (um)")
     plt.xlabel("Time (s)")
     plt.title(videofilename)
