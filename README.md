@@ -50,7 +50,8 @@ $ pip install -r requirements.txt
     # Pixel size(in microns):
     umperpixel = 0.7170625782472173 #10x # Default
     ```
-1. x軸とy軸それぞれのプロット範囲の指定もできます。その際は'select_plotrange_x(y)'をTrueにしてください。
+1. その下の'Thresholds of brightness'は、基本的にDefaultのままでOKです。
+1. x軸とy軸それぞれのプロット範囲の指定ができます。その際は'select_plotrange_x(y)'をTrueにしてください。
     ```python:settings.py
     # Plot range
     select_plotrange_x = False # Default: False
