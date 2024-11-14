@@ -46,7 +46,7 @@ def main():
         print("Error: No points were selected.")
         return
     
-    t, y, dataM = read_data(
+    t, y, dataM, t1, y1, posMax = read_data(
         cap=cap, numFrames=numFrames, width=width, fps=fps, Y=Y
         )
 
@@ -66,6 +66,18 @@ def main():
     plt.ylabel("Position along fiber (um)")
     plt.xlabel("Time (s)")
     plt.title(videofilename)
+
+    plt.figure(2)
+    plt.plot(t, posMax, '+')
+    plt.ylabel("Position along fiber (um)")
+    plt.xlabel("Time (s)")
+    plt.plot(t1, y1)
+    coef, cov = np.polyfit(t1, y1, 1, cov=True)
+    poly1d_fn = np.poly1d(coef) 
+    plt.plot(t1, poly1d_fn(t1), '--k')
+    speed = poly1d_fn[1]
+    sigma = np.sqrt(np.diag(cov))[1]
+    print(f'Particle speed: {speed:0.2f} +- {sigma:0.3f} um/s')
 
     plt.show()
 
@@ -140,4 +152,7 @@ def read_data(cap, numFrames, width, fps, Y):
     cap.release()    
     t1 = np.array(t1)
     y1 = np.array(y1)
-    return t, y, dataM
+    return t, y, dataM, t1, y1, posMax
+
+if __name__ == '__main__':
+    main()
