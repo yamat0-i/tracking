@@ -9,3 +9,5 @@ __pycache__
 !/plots/.gitkeep
 /video/*
 !/video/.gitkeep
+/log/*
+!/log/.gitkeep
