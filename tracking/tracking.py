@@ -12,6 +12,7 @@ import tracking.settings as settings
 root_dir = settings.root_dir
 video_dir = settings.video_dir
 plots_dir = settings.plots_dir
+log_dir = settings.log_dir
 videofilename = settings.videofilename
 vedeofilepath = video_dir / Path(videofilename + '.avi')
 
@@ -72,14 +73,22 @@ def main():
     plt.ylabel("Position along fiber (um)")
     plt.xlabel("Time (s)")
     plt.plot(t1, y1)
-    coef, cov = np.polyfit(t1, y1, 1, cov=True)
-    poly1d_fn = np.poly1d(coef) 
-    plt.plot(t1, poly1d_fn(t1), '--k')
-    speed = poly1d_fn[1]
-    sigma = np.sqrt(np.diag(cov))[1]
-    print(f'Particle speed: {speed:0.2f} +- {sigma:0.3f} um/s')
+    # coef, cov = np.polyfit(t1, y1, 1, cov=True)
+    # poly1d_fn = np.poly1d(coef) 
+    # plt.plot(t1, poly1d_fn(t1), '--k')
+    # speed = poly1d_fn[1]
+    # sigma = np.sqrt(np.diag(cov))[1]
+    # print(f'Particle speed: {speed:0.2f} +- {sigma:0.3f} um/s')
 
     plt.show()
+
+    logging(log_dir=log_dir,
+            videofilename=videofilename,
+            t=t,
+            posMax=posMax,
+            t1=t1,
+            y1=y1
+            )
 
 
 def set_tracking_parameters(cap):
@@ -153,6 +162,29 @@ def read_data(cap, numFrames, width, fps, Y):
     t1 = np.array(t1)
     y1 = np.array(y1)
     return t, y, dataM, t1, y1, posMax
+
+def logging(log_dir, videofilename, t, posMax, t1, y1):
+    savefilename_t = log_dir / Path(videofilename + '_t.dat')
+    if savefilename_t.exists():
+        savefilename_t.unlink()
+    np.savetxt(savefilename_t, t)
+
+    savefilename_posMax = log_dir / Path(videofilename + '_posMax.dat')
+    if savefilename_posMax.exists():
+        savefilename_posMax.unlink()
+    np.savetxt(savefilename_posMax, posMax)
+
+    savefilename_t1 = log_dir / Path(videofilename + '_t1.dat')
+    if savefilename_t1.exists():
+        savefilename_t1.unlink()
+    np.savetxt(savefilename_t1, t1)
+    
+    savefilename_y1 = log_dir / Path(videofilename + '_y1.dat')
+    if savefilename_y1.exists():
+        savefilename_y1.unlink()
+    np.savetxt(savefilename_y1, y1)
+
+
 
 if __name__ == '__main__':
     main()
