@@ -19,10 +19,6 @@ vedeofilepath = video_dir / Path(videofilename + '.avi')
 # Pixel size(in microns):
 umperpixel = settings.umperpixel
 
-# Thresholds of brightness
-pMin = settings.pMin
-pMax = settings.pMax
-
 # Plot range
 sprx = settings.select_plotrange_x
 spry = settings.select_plotrange_y
@@ -33,6 +29,19 @@ if spry:
     yMin = settings.yMin
     yMax = settings.yMax
 
+# Thresholds of brightness
+pMin = settings.pMin
+pMax = settings.pMax
+
+# Activate linear fitting
+fit = settings.fit
+# Output file
+output_t = settings.output_t
+output_y = settings.output_y
+output_dataM = settings.output_dataM
+output_t1 = settings.output_t1 
+output_y1 = settings.output_y1 
+output_posMax = settings.output_posMax
 
 def main():
     cap = cv2.VideoCapture(vedeofilepath)
@@ -73,22 +82,23 @@ def main():
     plt.ylabel("Position along fiber (um)")
     plt.xlabel("Time (s)")
     plt.plot(t1, y1)
-    # coef, cov = np.polyfit(t1, y1, 1, cov=True)
-    # poly1d_fn = np.poly1d(coef) 
-    # plt.plot(t1, poly1d_fn(t1), '--k')
-    # speed = poly1d_fn[1]
-    # sigma = np.sqrt(np.diag(cov))[1]
-    # print(f'Particle speed: {speed:0.2f} +- {sigma:0.3f} um/s')
-
+    if fit == True:
+        coef, cov = np.polyfit(t1, y1, 1, cov=True)
+        poly1d_fn = np.poly1d(coef) 
+        plt.plot(t1, poly1d_fn(t1), '--k')
+        speed = poly1d_fn[1]
+        sigma = np.sqrt(np.diag(cov))[1]
+        print(f'Particle speed: {speed:0.2f} +- {sigma:0.3f} um/s')
+    else:
+        pass
     plt.show()
 
-    logging(log_dir=log_dir,
-            videofilename=videofilename,
-            t=t,
-            posMax=posMax,
-            t1=t1,
-            y1=y1
-            )
+    logging(output_t, '_t.dat', t)
+    logging(output_y, '_y.dat', y)
+    logging(output_dataM, '_dataM.dat', dataM)
+    logging(output_t1, '_t1.dat', t1)
+    logging(output_y1, '_y1.dat', y1)
+    logging(output_posMax, '_posMax.dat', posMax)
 
 
 def set_tracking_parameters(cap):
@@ -163,28 +173,9 @@ def read_data(cap, numFrames, width, fps, Y):
     y1 = np.array(y1)
     return t, y, dataM, t1, y1, posMax
 
-def logging(log_dir, videofilename, t, posMax, t1, y1):
-    savefilename_t = log_dir / Path(videofilename + '_t.dat')
-    if savefilename_t.exists():
-        savefilename_t.unlink()
-    np.savetxt(savefilename_t, t)
-
-    savefilename_posMax = log_dir / Path(videofilename + '_posMax.dat')
-    if savefilename_posMax.exists():
-        savefilename_posMax.unlink()
-    np.savetxt(savefilename_posMax, posMax)
-
-    savefilename_t1 = log_dir / Path(videofilename + '_t1.dat')
-    if savefilename_t1.exists():
-        savefilename_t1.unlink()
-    np.savetxt(savefilename_t1, t1)
-    
-    savefilename_y1 = log_dir / Path(videofilename + '_y1.dat')
-    if savefilename_y1.exists():
-        savefilename_y1.unlink()
-    np.savetxt(savefilename_y1, y1)
-
-
-
-if __name__ == '__main__':
-    main()
+def logging(output_flag, filename_suffix, data):
+    if output_flag:
+        savefilename = log_dir / Path(videofilename + filename_suffix)
+        np.savetxt(fname=savefilename, X=data, header=videofilename)
+    else:
+        pass
