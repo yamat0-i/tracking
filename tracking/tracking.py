@@ -29,7 +29,7 @@ if spry:
     yMin = settings.yMin
     yMax = settings.yMax
 
-# Thresholds of brightness
+# Thresholds of tracking
 pMin = settings.pMin
 pMax = settings.pMax
 
@@ -39,9 +39,10 @@ fit = settings.fit
 output_t = settings.output_t
 output_y = settings.output_y
 output_dataM = settings.output_dataM
-output_t1 = settings.output_t1 
-output_y1 = settings.output_y1 
+output_t1 = settings.output_t1
+output_y1 = settings.output_y1
 output_posMax = settings.output_posMax
+
 
 def main():
     cap = cv2.VideoCapture(vedeofilepath)
@@ -55,7 +56,7 @@ def main():
     if not Y:
         print("Error: No points were selected.")
         return
-    
+        
     t, y, dataM, t1, y1, posMax = read_data(
         cap=cap, numFrames=numFrames, width=width, fps=fps, Y=Y
         )
@@ -103,9 +104,9 @@ def main():
 
 def set_tracking_parameters(cap):
     ret, img = cap.read()
-    if ret == False:
+    if not ret:
         print('ret:', ret)
-        exit(1) # debug
+        exit(1)  # debug
     clone = img.copy()
     height, width = img.shape[0], img.shape[1]
     cv2.imshow('image', img)
@@ -141,17 +142,19 @@ def read_data(cap, numFrames, width, fps, Y):
     t = np.arange(numFrames) / fps
     y = np.arange(width) * umperpixel
     posMax = np.zeros(numFrames)
-    t1 = [] # These arrays will hold the times and positions of peaks in the data i.e. where the particle was found to be.
+    # These arrays will hold the times and positions of peaks in the data i.e. where the particle was found to be.
+    t1 = [] 
     y1 = []
 
     for frame in range(numFrames):
         ret, img = cap.read()
-        if ret == False:
+        if not ret:
             break    
-        fr = img[:,:,0]
-        arr = fr[Yf,:]
-        dataM[:,frame] = arr   
-        posMaxArray = np.where(arr == np.amax(arr)) # find positions with max brightness
+        fr = img[:, :, 0]
+        arr = fr[Yf, :]
+        dataM[:, frame] = arr
+        # find positions with max brightness
+        posMaxArray = np.where(arr == np.amax(arr))
         elements0 = np.array(posMaxArray[0])
         elements = []
         for ii in range(elements0.size):
@@ -161,8 +164,9 @@ def read_data(cap, numFrames, width, fps, Y):
                 continue
         mean = np.mean(elements)
         sd = np.std(elements, axis=0)
+        # remove outliers using standard deviation
         pos_list = [x for x in elements if (x > mean - 2 * sd)]
-        pos_list = [x for x in pos_list if (x < mean + 2 * sd)] # remove outliers using standard deviation
+        pos_list = [x for x in pos_list if (x < mean + 2 * sd)]
         posMax[frame] = np.mean(pos_list) * umperpixel
         if (frame in range(frameStart, frameFinish)) and not np.isnan(posMax[frame]):
             t1.append(frame / fps)
@@ -172,6 +176,7 @@ def read_data(cap, numFrames, width, fps, Y):
     t1 = np.array(t1)
     y1 = np.array(y1)
     return t, y, dataM, t1, y1, posMax
+
 
 def logging(output_flag, filename_suffix, data):
     if output_flag:
